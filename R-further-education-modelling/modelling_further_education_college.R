@@ -157,11 +157,23 @@ df_coll_all <- select(df_coll_all,
 
 
 ## - further-education-college-uk-region
-#[] Add 'start-date', 'end-date'
-#[] rename 'v_index' to 'further-education-college-uk-region' (uid)
-#[] rename 'v_regions' to region
-#[] reorder fileds: 'further-education-college-uk-region', 'name', 'region', 'start-date', 'end-date'
+#[x] Add 'start-date', 'end-date'
+df_region$`start-date` <- NA
+df_region$`end-date` <- NA
+
+#[x] rename 'v_index' to 'further-education-college-uk-region' (uid)
+df_region <- rename(df_region, `further-education-college-uk-region` = v_index)
+
+#[x] rename 'v_regions' to region
+df_region <- rename(df_region, name = v_regions)
+
+#[x] reorder fileds: 'further-education-college-uk-region', 'name', 'start-date', 'end-date'
 
 
 ### Export ----
 
+## export df_coll_all as "further-education-college-uk.tsv"
+write_tsv(df_coll_all, path = "../data/further-education-college-uk.tsv", na = "")
+
+## export df_region as "further-education-college-uk-region.tsv"
+write_tsv(df_region, path = "../data/further-education-college-uk-region.tsv", na = "")
