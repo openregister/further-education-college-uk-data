@@ -1,25 +1,25 @@
-#### Modelling: Further-Education-College-UK
+##### Modelling: Further-Education-College-UK
 
-### Library call: -----
+#### Library call: -----
 library(tidyverse)
 library(readxl)
 
-### Load source files -----
+#### Load source files -----
 source_file <- read_xlsx(path = "../list/List of FE Colleges UK-wide 30 Oct 2018.xlsx", col_types = "text")
 
-### Analysis in Excel -----
+#### Analysis in Excel -----
 # A single list of collleges
 # separated by region, by a row inserted as a divider
 
-### Analysis in R ----
+#### Analysis in R ----
 
-## Work with data_file
+### Work with data_file
 data_file <- source_file
 
 # rename field "Colleges in England" to "name"
 names(data_file)[1] <- "name"
 
-# Summary view of data_file
+## Summary view of data_file
 glimpse(data_file)
 # 1 column
 # 317 rows
@@ -30,7 +30,7 @@ duplicate_check <- as_tibble(table(data_file))
 duplicate_check <-duplicate_check[duplicate_check$n>1,]
 # 1 dupicate found: 'College' appears x2 -- Also appears to be an ambiguos entry.
 
-# Index for rows with "College" as a value:
+## Index for rows with "College" as a value:
 which(data_file$name == "College")
 # row: 160, 217
 # [] query with contact
@@ -40,30 +40,30 @@ which(data_file$name == "College")
 # College contact details?
 # UKPRN per college/institution?
 
-### Modelling ----
+#### Modelling ----
 
-## Todo
+### Todo
 # [x] separate into separate tables per region
 # [x] create an indexed table of regions
 # [x] map each college to a region by index
 
 # There are 4 regions in the dataset: "England", "Northern Ireland", "Wales", "Scotland"
 
-## [x] create an indexed table of regions
+### [x] create an indexed table of regions
 v_index <- c("1","2","3","4")
 v_regions <- c("England", "Northern Ireland", "Wales", "Scotland")
 df_region <- tibble(v_index, v_regions)
 
-## [x] separate into separate tables per region
+### [x] separate into separate tables per region
 # England:
 df_coll_eng <- data_file[1:268,]
 
-# Northern Ireland:
+## Northern Ireland:
 df_coll_ni <- data_file[269:275,]
 # remove first row containing the divider row
 df_coll_ni <-  df_coll_ni[-1,]
 
-# Wales
+## Wales
 df_coll_wls <- data_file[276:290,]
 # remove first row containing the divider row
 df_coll_wls <-df_coll_wls[-1,] 
@@ -173,7 +173,27 @@ df_region <- rename(df_region, name = v_regions)
 ### Export ----
 
 ## export df_coll_all as "further-education-college-uk.tsv"
-write_tsv(df_coll_all, path = "../data/further-education-college-uk.tsv", na = "")
+# write_tsv(df_coll_all, path = "../data/further-education-college-uk.tsv", na = "")
 
 ## export df_region as "further-education-college-uk-region.tsv"
-write_tsv(df_region, path = "../data/further-education-college-uk-region.tsv", na = "")
+# write_tsv(df_region, path = "../data/further-education-college-uk-region.tsv", na = "")
+
+### Update to Register ----
+
+## Remove duplicate rows '160', and '217', containing 'College' under name entry.
+# Confirm the correct rows have been identified
+df_coll_all[c(160, 217),]
+# further-education-college-uk    name                                region start-date end-date
+# 160                          160 College further-education-college-uk-region:1         NA       NA
+# 217                          217 College further-education-college-uk-region:1         NA       NA
+
+# Remove rows
+View(df_coll_all)
+
+df_coll_all_2 <-  df_coll_all[-c(160, 217),]
+df_coll_all_2$`further-education-college-uk` <- seq.int(nrow(df_coll_all_2))
+
+View(df_coll_all_2)
+
+# Export 
+write_tsv(df_coll_all_2, path = "../data/further-education-college-uk.tsv", na = "")
